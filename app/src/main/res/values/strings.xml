@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Inventory App</string>
+    <string name="empty_view_title_text">Inventory gets a bit dusty...</string>
+    <string name="empty_view_subtitle_text">Cean it and add some items using button down there</string>
+    <string name="action_insert_data">Insert dummy data</string>
+    <string name="action_delete_all_entries">Delete all items</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="item_deleted">Item has been succesfully deleted</string>
+    <string name="no_item_deleted">Item couldn\'t be deleted</string>
+    <string name="editor_activity_title_add_item">Add item</string>
+    <string name="editor_activity_title_edit_item">Edit item</string>
+    <string name="delete_dialog_msg">Want to delete the item?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="unsaved_changes_dialog_msg">There are unsaved changes</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="editor_insert_item_failed">Couldn\'t insert item</string>
+    <string name="editor_insert_item_successful">Item succesfully inserted</string>
+    <string name="editor_update_item_failed">Couldn\'t update the item</string>
+    <string name="editor_update_item_successful">Item succesfully updated</string>
+    <string name="delete_all_dialog_msg">Delete all data</string>
+</resources>
