@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(imageId)
                 + '/' + getResources().getResourceTypeName(imageId) + '/' + getResources().getResourceEntryName(imageId));
-
+        Log.v("MainActivity", imageUri.toString());
         values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageUri.toString());
 
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert

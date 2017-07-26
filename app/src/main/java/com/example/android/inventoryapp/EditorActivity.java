@@ -1,5 +1,6 @@
 package com.example.android.inventoryapp;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -9,18 +10,22 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.ItemContract.ItemEntry;
+
+import java.io.File;
 
 /**
  * Created by Jam on 25.07.2017.
@@ -29,6 +34,7 @@ import com.example.android.inventoryapp.data.ItemContract.ItemEntry;
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
+    public static final String LOG_TAG = EditorActivity.class.getSimpleName();
     /**
      * EditText field to enter the items's name
      */
@@ -44,16 +50,23 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private EditText mPriceEditText;
 
-    /**
-     * TextView field to enter the item's image
-     */
-    private TextView mImageTextView;
+    private ImageView mAddImage;
 
     private Uri mCurrentItemUri;
 
     private static final int EXISTING_ITEM_LOADER = 0;
 
+    private static final int PICTURE_GALLERY_REQUEST = 5;
+
+    /**
+     * Identifier for the record album image URI loader
+     */
+    private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
+
+
     private boolean mItemHasChanged = false;
+
+    private Uri pictureUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +86,40 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mNameEditText = (EditText) findViewById(R.id.edit_item_name);
         mQuantityEditText = (EditText) findViewById(R.id.edit_item_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
+        mAddImage = (ImageView) findViewById(R.id.edit_item_image_upload_iv);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+        mAddImage.setOnTouchListener(mTouchListener);
+
+        mAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openPictureGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+                File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+                String pictureDirectoryPath = pictureDirectory.getPath();
+
+                Uri data = Uri.parse(pictureDirectoryPath);
+
+                openPictureGallery.setDataAndType(data, "image/*");
+
+                startActivityForResult(openPictureGallery, PICTURE_GALLERY_REQUEST);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        // checking if the request code and result code match our request
+        if (requestCode == PICTURE_GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                pictureUri = resultData.getData();
+                Log.v(LOG_TAG, "działa? = " + pictureUri.toString());
+            }
+        }
     }
 
     private void showDeleteConfirmationDialog() {
@@ -192,36 +235,37 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private void savePet() {
-        String nameString = mNameEditText.getText().toString().trim();
-        String quantityString = mQuantityEditText.getText().toString().trim();
-        String priceString = mPriceEditText.getText().toString().trim();
-        if (nameString.isEmpty() && quantityString.isEmpty() && priceString.isEmpty())
-            return;
-        if (quantityString.isEmpty())
-            quantityString = "0";
-        int quantity = Integer.parseInt(quantityString);
-        // Create a String that contains the SQL statement to create the items table
+        if (pictureUri != null) {
+            String nameString = mNameEditText.getText().toString().trim();
+            String quantityString = mQuantityEditText.getText().toString().trim();
+            String priceString = mPriceEditText.getText().toString().trim();
+            if (nameString.isEmpty() && quantityString.isEmpty() && priceString.isEmpty())
+                return;
+            if (quantityString.isEmpty())
+                quantityString = "0";
+            int quantity = Integer.parseInt(quantityString);
+            // Create a String that contains the SQL statement to create the items table
 
-        ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, priceString);
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
-        if (mCurrentItemUri == null) {
-            Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
-            if (newUri == null) {
-                Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
+            ContentValues values = new ContentValues();
+            values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
+            values.put(ItemEntry.COLUMN_ITEM_PRICE, priceString);
+            values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
+            if (mCurrentItemUri == null) {
+                Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
+                if (newUri == null) {
+                    Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.editor_insert_item_successful) + newUri, Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(this, getString(R.string.editor_insert_item_successful) + newUri, Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
-            if (rowsAffected == 0) {
-                Toast.makeText(this, getString(R.string.editor_update_item_failed), Toast.LENGTH_SHORT);
-            } else {
-                Toast.makeText(this, getString(R.string.editor_update_item_successful), Toast.LENGTH_SHORT);
+                int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
+                if (rowsAffected == 0) {
+                    Toast.makeText(this, getString(R.string.editor_update_item_failed), Toast.LENGTH_SHORT);
+                } else {
+                    Toast.makeText(this, getString(R.string.editor_update_item_successful), Toast.LENGTH_SHORT);
+                }
             }
         }
-
     }
 
     @Override

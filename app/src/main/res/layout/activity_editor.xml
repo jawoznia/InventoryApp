@@ -37,9 +37,14 @@
 
     <!-- image upload -->
     <TextView
-        android:id="@+id/edit_item_image_upload"
+        android:id="@+id/edit_item_image_upload_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Click here to upload the image"/>
+    <ImageView
+        android:id="@+id/edit_item_image_upload_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/no_image"/>
 
 </LinearLayout>
