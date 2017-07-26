@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -166,40 +167,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     String toastMessage = "Order quantity required";
                     Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
                 }
-
             }
         });
-        mDecreaseBtn.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-                String currentProduct = mNameEditText.getText().toString();
-                String toastMessage = null;
-                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
-
-                if (currentQuantity >= 1) {
-                    currentQuantity--;
-                    mQuantityEditText.setText(String.valueOf(currentQuantity));
-                } else {
-                    toastMessage = "You can't reduce your stock of " + currentProduct + " to 0!";
-                    mQuantityEditText.setText(String.valueOf(currentQuantity));
-                    Toast.makeText(v.getContext(), toastMessage, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        mIncreaseBtn.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
-
-                currentQuantity++;
-                mQuantityEditText.setText(String.valueOf(currentQuantity));
-            }
-        });
-
     }
 
     @Override
@@ -229,7 +198,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     } catch (SecurityException e) {
                         e.printStackTrace();
                     }
-                    mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mAddImage));
+                    mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mContext, mAddImage));
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -240,7 +209,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
-    public Bitmap getBitmapFromUri(Uri uri, ImageView imageView) {
+    public Bitmap getBitmapFromUri(Uri uri, Context mContext, ImageView imageView) {
 
         if (uri == null || uri.toString().isEmpty())
             return null;
@@ -257,7 +226,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             bmOptions.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(input, null, bmOptions);
-            input.close();
+            if (input != null)
+                input.close();
 
             int photoW = bmOptions.outWidth;
             int photoH = bmOptions.outHeight;
@@ -302,16 +272,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 deleteItem();
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the item.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
-
+        builder.setNegativeButton(R.string.cancel, null);
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -428,10 +389,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String priceString = mPriceEditText.getText().toString().trim();
             String supplierString = mSupplierEditText.getText().toString().trim();
             String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
-            if (nameString.isEmpty() && quantityString.isEmpty() && priceString.isEmpty())
+            if (nameString.isEmpty() || quantityString.isEmpty() ||
+                    priceString.isEmpty() || pictureUri.toString().isEmpty() ||
+                    supplierEmailString.isEmpty() || supplierString.isEmpty()) {
+                Toast.makeText(this, R.string.editor_give_all_the_informations, Toast.LENGTH_SHORT);
                 return;
-            if (quantityString.isEmpty())
-                quantityString = "0";
+            }
             int quantity = parseInt(quantityString);
             // Create a String that contains the SQL statement to create the items table
 
@@ -459,6 +422,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     Toast.makeText(this, getString(R.string.editor_update_item_successful), Toast.LENGTH_SHORT);
                 }
             }
+        } else {
+            Toast.makeText(mContext, R.string.editor_give_all_the_informations, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -528,6 +493,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1)
             return;
+
+        ViewTreeObserver viewTreeObserver = mAddImage.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mAddImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mContext, mAddImage));
+                }
+            }
+        });
         if (cursor.moveToFirst()) {
             int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
             int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
@@ -555,10 +531,42 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (pictureUri.toString().contains("drawable"))
                 mAddImage.setImageURI(uriData);
             else {
-                Bitmap bM = getBitmapFromUri(pictureUri, mAddImage);
+                Bitmap bM = getBitmapFromUri(pictureUri, mContext, mAddImage);
                 mAddImage.setImageBitmap(bM);
             }
         }
+        mDecreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                String currentProduct = mNameEditText.getText().toString();
+                String toastMessage;
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                if (currentQuantity >= 1) {
+                    currentQuantity--;
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                } else {
+                    toastMessage = "You can't reduce your stock of " + currentProduct + " to 0!";
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                    Toast.makeText(v.getContext(), toastMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        mIncreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                currentQuantity++;
+                mQuantityEditText.setText(String.valueOf(currentQuantity));
+            }
+        });
+
+
     }
 
     @Override
