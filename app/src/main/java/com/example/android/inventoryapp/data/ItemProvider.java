@@ -211,7 +211,7 @@ public class ItemProvider extends ContentProvider {
         if (values.size() == 0) {
             return 0;
         }
-        // Otherwise, get writeable database to update the data
+        // Otherwise, get writable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Returns the number of database rows affected by the update statement

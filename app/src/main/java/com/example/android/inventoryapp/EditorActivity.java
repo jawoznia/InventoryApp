@@ -81,8 +81,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     final Context mContext = this;
 
-    private int mQuantity;
-
     /**
      * Identifier for the record album image URI loader
      */
@@ -149,7 +147,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             public void onClick(View view) {
                 String orderQty = mQuantityEditText.getText().toString().trim();
-                mQuantityEditText.setText("");
                 if (orderQty.length() != 0) {
                     String productName = mNameEditText.getText().toString().trim();
 
@@ -213,8 +210,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 try {
                     //this is the address of the image on the sd cards
                     pictureUri = resultData.getData();
-                    Log.v(LOG_TAG, "działa? = " + pictureUri.toString());
-
                     int takeFlags = resultData.getFlags();
                     takeFlags &= (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     picturePath = pictureUri.toString();
@@ -486,7 +481,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // If the item hasn't changed, continue with navigating up to parent activity
-                // which is the {@link CatalogActivity}.
+                // which is the {@link MainActivity}.
                 if (!mItemHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;

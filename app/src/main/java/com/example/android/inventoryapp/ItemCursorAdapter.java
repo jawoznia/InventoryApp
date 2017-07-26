@@ -60,7 +60,7 @@ public class ItemCursorAdapter extends CursorAdapter {
 
         tvName.setText(itemName);
         tvPrice.setText(itemPrice);
-        tvQuantity.setText("Quantity = " + itemQuantity);
+        tvQuantity.setText(context.getString(R.string.quantity_setting_text) + itemQuantity);
 
         if (itemImage != null)
             if (!itemImage.isEmpty())

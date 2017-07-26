@@ -32,4 +32,5 @@
     <string name="editor_order_btn">Order</string>
     <string name="editor_decrease_btn">Decrease</string>
     <string name="editor_increase_btn">Increase</string>
+    <string name="quantity_setting_text">Quantity =</string>
 </resources>
