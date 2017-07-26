@@ -391,6 +391,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String nameString = mNameEditText.getText().toString().trim();
             String quantityString = mQuantityEditText.getText().toString().trim();
             String priceString = mPriceEditText.getText().toString().trim();
+            String supplierString = mSupplierEditText.getText().toString().trim();
+            String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
             if (nameString.isEmpty() && quantityString.isEmpty() && priceString.isEmpty())
                 return;
             if (quantityString.isEmpty())
@@ -405,6 +407,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             values.put(ItemEntry.COLUMN_ITEM_PRICE, priceString);
             values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
             values.put(ItemEntry.COLUMN_ITEM_IMAGE, picturePath);
+            values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplierString);
+            values.put(ItemEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
             if (mCurrentItemUri == null) {
                 Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
                 if (newUri == null) {
@@ -474,7 +478,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
                 ItemEntry.COLUMN_ITEM_PRICE,
-                ItemEntry.COLUMN_ITEM_IMAGE};
+                ItemEntry.COLUMN_ITEM_IMAGE,
+                ItemEntry.COLUMN_ITEM_SUPPLIER,
+                ItemEntry.COLUMN_SUPPLIER_EMAIL};
         return new CursorLoader(this,
                 mCurrentItemUri,
                 projection,
@@ -492,12 +498,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
             int pictureColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
+            int supplierColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
+            int supplierEmailColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_SUPPLIER_EMAIL);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String price = cursor.getString(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String stringUri = cursor.getString(pictureColumnIndex);
+            String stringSupplier = cursor.getString(supplierColumnIndex);
+            String stringEmailSupplier = cursor.getString(supplierEmailColumnIndex);
             Uri uriData = Uri.parse(stringUri);
 
             Log.v(LOG_TAG, "Uridata = " + uriData +
@@ -506,6 +516,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
             mQuantityEditText.setText(Integer.toString(quantity));
+            mSupplierEmailEditText.setText(stringEmailSupplier);
+            mSupplierEditText.setText(stringSupplier);
             pictureUri = uriData;
             if (pictureUri.toString().contains("drawable"))
                 mAddImage.setImageURI(uriData);
@@ -522,5 +534,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
         mAddImage.setImageResource(R.drawable.no_image);
+        mSupplierEditText.setText("");
+        mSupplierEmailEditText.setText("");
     }
 }

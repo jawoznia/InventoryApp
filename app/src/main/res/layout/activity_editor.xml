@@ -1,84 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/main_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <!-- name of item/s -->
         <TextView
+            style="@style/editor_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Name of the item" />
+            android:text="@string/editor_name_tv"
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/edit_item_name"
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <!-- quantity of the items -->
         <TextView
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Quantity of the products" />
+            android:text="@string/editor_quantity_tv" />
 
         <EditText
             android:id="@+id/edit_item_quantity"
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:inputType="number" />
 
         <!-- price of the single item -->
         <TextView
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Price of the single product" />
+
+            android:text="@string/editor_price_tv" />
 
         <EditText
             android:id="@+id/edit_item_price"
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <!-- image upload -->
         <TextView
             android:id="@+id/edit_item_image_upload_tv"
-            android:layout_width="wrap_content"
+            style="@style/editor_style"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Click here to upload the image" />
+
+            android:text="@string/editor_image_tv" />
 
         <ImageView
             android:id="@+id/edit_item_image_upload_iv"
             android:layout_width="88dp"
             android:layout_height="88dp"
+
             android:src="@drawable/no_image" />
 
         <TextView
+            style="@style/editor_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Supplier:" />
+
+            android:text="@string/editor_supplier_tv" />
 
         <EditText
             android:id="@+id/edit_supplier"
+            style="@style/editor_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
+            style="@style/editor_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Supplier email" />
+
+            android:text="@string/editor_supplier_email_tv" />
 
         <EditText
             android:id="@+id/edit_supplier_email"
+            style="@style/editor_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/edit_order_btn"
+            style="@style/editor_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Order"/>
+            android:text="@string/editor_order_btn" />
     </LinearLayout>
 </ScrollView>

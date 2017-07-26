@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_bg"
     tools:context=".MainActivity">
 
     <!-- Empty view for the list -->
@@ -38,7 +39,7 @@
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/add_item_image"
@@ -47,6 +48,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_item"
-        android:background="@color/image_bg"/>
+        android:background="@color/image_bg"
+        android:src="@drawable/ic_add_item" />
 </RelativeLayout>

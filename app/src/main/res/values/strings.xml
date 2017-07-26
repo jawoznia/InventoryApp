@@ -21,4 +21,13 @@
     <string name="editor_update_item_failed">Couldn\'t update the item</string>
     <string name="editor_update_item_successful">Item succesfully updated</string>
     <string name="delete_all_dialog_msg">Delete all data</string>
+    <string name="main_sell_btn">sell</string>
+    <string name="main_buy_btn">buy</string>
+    <string name="editor_name_tv">Name of the item:</string>
+    <string name="editor_quantity_tv">Quantity of the products</string>
+    <string name="editor_price_tv">Price of the single product</string>
+    <string name="editor_image_tv">Click here to upload the image</string>
+    <string name="editor_supplier_tv">Supplier:</string>
+    <string name="editor_supplier_email_tv">Supplier email:</string>
+    <string name="editor_order_btn">Order</string>
 </resources>

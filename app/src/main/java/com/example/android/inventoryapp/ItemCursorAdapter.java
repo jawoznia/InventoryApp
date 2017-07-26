@@ -64,7 +64,9 @@ public class ItemCursorAdapter extends CursorAdapter {
 
         if (itemImage != null)
             if (!itemImage.isEmpty())
-                ivImage.setImageURI(Uri.parse(itemImage));
+                if (itemImage.contains("drawable"))
+                    ivImage.setImageURI(Uri.parse(itemImage));
+
 
         saleBtn.setOnClickListener(new View.OnClickListener()
 

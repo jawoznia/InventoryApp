@@ -121,16 +121,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     /**
-     * Helper method to insert hardcoded books data into the database.
+     * Helper method to insert hardcoded items data into the database.
      */
     private void insertItems() {
-        insertItem("Yellow ball", "7.50", 3, R.drawable.yellow_ball, "jnwznk@gmail.com", "Janek");
+        insertItem("Yellow ball", "7.50", 3, R.drawable.yellow_ball, "mail@example.com", "Janek");
     }
 
 
     private void insertItem(String name, String price, int quantity, int imageId, String email, String supplier) {
         // Create a ContentValues object where column names are the keys,
-        // and book's attributes are the values.
+        // and item's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(ItemEntry.COLUMN_ITEM_NAME, name);
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplier);
 
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
-        // into the books database table.
+        // into the items database table.
         // Receive the new content URI that will allow us to access database's data in the future.
         Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
 
