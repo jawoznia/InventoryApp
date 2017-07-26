@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.ItemContract.ItemEntry;
 
@@ -35,7 +33,7 @@ public class ItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
 
 
         TextView tvName = (TextView) view.findViewById(R.id.item_name);
@@ -55,45 +53,30 @@ public class ItemCursorAdapter extends CursorAdapter {
 
         String itemName = cursor.getString(nameColumnIndex);
         String itemPrice = cursor.getString(priceColumnIndex);
-        int itemQuantity = cursor.getInt(quantityColumnIndex);
+        final int itemQuantity = cursor.getInt(quantityColumnIndex);
         String itemImage = cursor.getString(imageColumnIndex);
         final int itemId = cursor.getInt(idColumnIndex);
 
         tvName.setText(itemName);
         tvPrice.setText(itemPrice);
-        tvQuantity.setText(itemQuantity);
+        tvQuantity.setText("Quantity = " + itemQuantity);
         ivImage.setImageURI(Uri.parse(itemImage));
 
         saleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri currentItemUri = ContentUris.withAppendedId(CONTENT_URI, itemId);
                 if (itemQuantity > 0) {
-                    itemQuantity--;
+                    int tempQuantity = itemQuantity;
+                    tempQuantity--;
 
                     ContentValues values = new ContentValues();
-                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
-                    Context.getContentResolver().update(uri, values, null, null);
-                } else {
-                    Toast.makeText(view.getContext(), "This book has no stock", Toast.LENGTH_SHORT).show();
+                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY, tempQuantity);
+                    Uri currentItemUri = ContentUris.withAppendedId(CONTENT_URI, itemId);
+
+                    // create the Uri of the current product
+                    context.getContentResolver().update(currentItemUri, values, null, null);
                 }
-                reduceItemQuantity(view, itemQuantity, currentItemUri);
             }
         });
-
     }
-
-    private void reduceItemQuantity(View view, int quantity, Uri uri) {
-
-        if (quantity > 0) {
-            quantity--;
-
-            ContentValues values = new ContentValues();
-            values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
-            Context.getContentResolver().update(uri, values, null, null);
-        } else {
-            Toast.makeText(view.getContext(), "This book has no stock", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 }
