@@ -169,6 +169,37 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 }
             }
         });
+        mDecreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                String currentProduct = mNameEditText.getText().toString();
+                String toastMessage;
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                if (currentQuantity >= 1) {
+                    currentQuantity--;
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                } else {
+                    toastMessage = "You can't reduce your stock of " + currentProduct + " to 0!";
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                    Toast.makeText(v.getContext(), toastMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        mIncreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                currentQuantity++;
+                mQuantityEditText.setText(String.valueOf(currentQuantity));
+            }
+        });
+
     }
 
     @Override
@@ -535,38 +566,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 mAddImage.setImageBitmap(bM);
             }
         }
-        mDecreaseBtn.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-                String currentProduct = mNameEditText.getText().toString();
-                String toastMessage;
-                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
-
-                if (currentQuantity >= 1) {
-                    currentQuantity--;
-                    mQuantityEditText.setText(String.valueOf(currentQuantity));
-                } else {
-                    toastMessage = "You can't reduce your stock of " + currentProduct + " to 0!";
-                    mQuantityEditText.setText(String.valueOf(currentQuantity));
-                    Toast.makeText(v.getContext(), toastMessage, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        mIncreaseBtn.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
-
-                currentQuantity++;
-                mQuantityEditText.setText(String.valueOf(currentQuantity));
-            }
-        });
-
-
     }
 
     @Override
