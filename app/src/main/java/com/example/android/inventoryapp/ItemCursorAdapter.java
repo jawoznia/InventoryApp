@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,15 +58,12 @@ public class ItemCursorAdapter extends CursorAdapter {
         String itemImage = cursor.getString(imageColumnIndex);
         final int itemId = cursor.getInt(idColumnIndex);
 
-        Log.v("ItemCursorAdapter.java", "imageColumnIndex" + imageColumnIndex
-                + "; imageString = " + itemImage);
         tvName.setText(itemName);
         tvPrice.setText(itemPrice);
         tvQuantity.setText("Quantity = " + itemQuantity);
 
         if (itemImage != null)
             if (!itemImage.isEmpty())
-
                 ivImage.setImageURI(Uri.parse(itemImage));
 
         saleBtn.setOnClickListener(new View.OnClickListener()

@@ -114,6 +114,8 @@ public class ItemProvider extends ContentProvider {
         String price = values.getAsString(ItemEntry.COLUMN_ITEM_PRICE);
         String quantity = values.getAsString(ItemEntry.COLUMN_ITEM_QUANTITY);
         String image = values.getAsString(ItemEntry.COLUMN_ITEM_IMAGE);
+        String supplier = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
+        String email = values.getAsString(ItemEntry.COLUMN_SUPPLIER_EMAIL);
 
         if (price == null) {
             throw new IllegalArgumentException("Item requires a price");
@@ -125,7 +127,13 @@ public class ItemProvider extends ContentProvider {
             throw new IllegalArgumentException("Item requires a name");
         }
         if (image == null) {
-            throw new IllegalArgumentException("Item requires a name");
+            throw new IllegalArgumentException("Item requires a image");
+        }
+        if (supplier == null) {
+            throw new IllegalArgumentException("Item requires a supplier");
+        }
+        if (email == null) {
+            throw new IllegalArgumentException("Item requires a email");
         }
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();

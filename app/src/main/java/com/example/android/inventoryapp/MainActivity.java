@@ -57,11 +57,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.v("MainActivity", "Rozpoczęto start nowej aktywności");
                 Intent editIntent = new Intent(MainActivity.this, EditorActivity.class);
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
                 editIntent.setData(currentItemUri);
-                Log.v("MainActivity", "Rozpoczęto start nowej aktywności");
                 startActivity(editIntent);
             }
         });
@@ -76,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 ItemEntry.COLUMN_ITEM_PRICE,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
                 ItemEntry.COLUMN_ITEM_IMAGE};
-        Log.v("MainActivity.java", ItemEntry.COLUMN_ITEM_IMAGE);
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -89,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link BookCursorAdapter} with this new cursor containing updated item data
+        // Update {@link ItemCursorAdapter} with this new cursor containing updated item data
         mCursorAdapter.swapCursor(data);
     }
 
@@ -127,11 +124,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Helper method to insert hardcoded books data into the database.
      */
     private void insertItems() {
-        insertItem("Yellow ball", "7.50", 3, R.drawable.yellow_ball);
+        insertItem("Yellow ball", "7.50", 3, R.drawable.yellow_ball, "jnwznk@gmail.com", "Janek");
     }
 
 
-    private void insertItem(String name, String price, int quantity, int imageId) {
+    private void insertItem(String name, String price, int quantity, int imageId, String email, String supplier) {
         // Create a ContentValues object where column names are the keys,
         // and book's attributes are the values.
         ContentValues values = new ContentValues();
@@ -141,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(imageId)
                 + '/' + getResources().getResourceTypeName(imageId) + '/' + getResources().getResourceEntryName(imageId));
-        Log.v("MainActivity", imageUri.toString());
         values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageUri.toString());
+        values.put(ItemEntry.COLUMN_SUPPLIER_EMAIL, email);
+        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplier);
 
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
         // into the books database table.

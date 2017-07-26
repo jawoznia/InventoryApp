@@ -1,55 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!-- name of item/s -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name of the item" />
+        <!-- name of item/s -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Name of the item" />
 
-    <EditText
-        android:id="@+id/edit_item_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/edit_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <!-- quantity of the items -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quantity of the products" />
+        <!-- quantity of the items -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity of the products" />
 
-    <EditText
-        android:id="@+id/edit_item_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number" />
+        <EditText
+            android:id="@+id/edit_item_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
 
-    <!-- price of the single item -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Price of the single product" />
+        <!-- price of the single item -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price of the single product" />
 
-    <EditText
-        android:id="@+id/edit_item_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/edit_item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <!-- image upload -->
-    <TextView
-        android:id="@+id/edit_item_image_upload_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click here to upload the image" />
+        <!-- image upload -->
+        <TextView
+            android:id="@+id/edit_item_image_upload_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click here to upload the image" />
 
-    <ImageView
-        android:id="@+id/edit_item_image_upload_iv"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
-        android:src="@drawable/no_image" />
+        <ImageView
+            android:id="@+id/edit_item_image_upload_iv"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:src="@drawable/no_image" />
 
-</LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Supplier:" />
+
+        <EditText
+            android:id="@+id/edit_supplier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Supplier email" />
+
+        <EditText
+            android:id="@+id/edit_supplier_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/edit_order_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order"/>
+    </LinearLayout>
+</ScrollView>

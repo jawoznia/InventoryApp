@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -52,10 +53,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private EditText mQuantityEditText;
 
+    private Button mOrderButton;
     /**
      * EditText field to enter the item's price
      */
     private EditText mPriceEditText;
+
+    private EditText mSupplierEditText;
+
+    private EditText mSupplierEmailEditText;
 
     private ImageView mAddImage;
 
@@ -100,11 +106,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityEditText = (EditText) findViewById(R.id.edit_item_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
         mAddImage = (ImageView) findViewById(R.id.edit_item_image_upload_iv);
+        mSupplierEditText = (EditText) findViewById(R.id.edit_supplier);
+        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
+        mOrderButton = (Button) findViewById(R.id.edit_order_btn);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mAddImage.setOnTouchListener(mTouchListener);
+        mSupplierEditText.setOnTouchListener(mTouchListener);
+        mSupplierEmailEditText.setOnTouchListener(mTouchListener);
+        mOrderButton.setOnTouchListener(mTouchListener);
 
         mAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +134,35 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 startActivityForResult(openPictureGallery, PICTURE_GALLERY_REQUEST);
             }
         });
+        // Set a clickListener on email button
+        mOrderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String orderQty = mQuantityEditText.getText().toString().trim();
+                mQuantityEditText.setText("");
+                if (orderQty.length() != 0) {
+                    String productName = mNameEditText.getText().toString().trim();
+
+                    String emailAddress = "mailto:" + mSupplierEmailEditText.getText().toString().trim();
+                    String subjectHeader = "Order For: " + productName;
+                    String orderMessage = "Please send " + orderQty + " units of " + productName + ". " + " \n\n" + "Thank you.";
+
+                    Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    intent.setData(Uri.parse(emailAddress));
+                    intent.putExtra(Intent.EXTRA_SUBJECT, subjectHeader);
+                    intent.putExtra(Intent.EXTRA_TEXT, orderMessage);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
+                    }
+
+                } else {
+                    String toastMessage = "Order quantity required";
+                    Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
     }
 
     @Override
@@ -143,7 +184,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     inputStream = getContentResolver().openInputStream(pictureUri);
                     //Get a bitmap from the stream
                     picture = BitmapFactory.decodeStream(inputStream);
-                    Bitmap.createScaledBitmap(picture, 88, 88, false);
                     //Show the image to the user
                     mAddImage.setImageBitmap(picture);
                     picturePath = pictureUri.toString();
@@ -197,6 +237,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             input = this.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            Bitmap.createScaledBitmap(bitmap, 88, 88, false);
             input.close();
             return bitmap;
 
@@ -459,17 +500,19 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String stringUri = cursor.getString(pictureColumnIndex);
             Uri uriData = Uri.parse(stringUri);
 
-            Log.v(LOG_TAG,"Uridata = "+uriData+
-            "; stringUri = "+ stringUri);
+            Log.v(LOG_TAG, "Uridata = " + uriData +
+                    "; stringUri = " + stringUri);
             // Update the vies on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
             mQuantityEditText.setText(Integer.toString(quantity));
-
-            //mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mAddImage));
-
-
-            mAddImage.setImageURI(uriData);
+            pictureUri = uriData;
+            if (pictureUri.toString().contains("drawable"))
+                mAddImage.setImageURI(uriData);
+            else {
+                Bitmap bM = getBitmapFromUri(pictureUri, mAddImage);
+                mAddImage.setImageBitmap(bM);
+            }
         }
     }
 
