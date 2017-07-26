@@ -34,7 +34,7 @@ public final class ItemContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" +
                         CONTENT_AUTHORITY + "/" + PATH_ITEMS;
 
-        public static final String TABLE_NAME = "pets";
+        public static final String TABLE_NAME = "items";
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_ITEM_NAME = "name";
         public static final String COLUMN_ITEM_QUANTITY = "quantity";
