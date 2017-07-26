@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 ItemEntry.COLUMN_ITEM_PRICE,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
                 ItemEntry.COLUMN_ITEM_IMAGE};
+        Log.v("MainActivity.java", ItemEntry.COLUMN_ITEM_IMAGE);
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link BookCursorAdapter} with this new cursor containing updated pet data
+        // Update {@link BookCursorAdapter} with this new cursor containing updated item data
         mCursorAdapter.swapCursor(data);
     }
 
@@ -170,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.setMessage(R.string.delete_all_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
+                // User clicked the "Delete" button, so delete the item.
                 int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
                 Log.v("MainActivity", rowsDeleted + " rows deleted from items database");
             }
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }

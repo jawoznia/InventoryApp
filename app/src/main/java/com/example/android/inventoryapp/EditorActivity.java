@@ -3,12 +3,16 @@ package com.example.android.inventoryapp;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
@@ -26,6 +30,9 @@ import android.widget.Toast;
 import com.example.android.inventoryapp.data.ItemContract.ItemEntry;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Jam on 25.07.2017.
@@ -58,10 +65,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private static final int PICTURE_GALLERY_REQUEST = 5;
 
+    private String picturePath;
+
+    private Bitmap picture;
+
+    final Context mContext = this;
+
     /**
      * Identifier for the record album image URI loader
      */
-    private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
+    private static final String STATE_PICTURE_URI = "STATE_PICTURE_URI";
 
 
     private boolean mItemHasChanged = false;
@@ -116,8 +129,87 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // checking if the request code and result code match our request
         if (requestCode == PICTURE_GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
-                pictureUri = resultData.getData();
-                Log.v(LOG_TAG, "działa? = " + pictureUri.toString());
+                try {
+                    //this is the address of the image on the sd cards
+                    pictureUri = resultData.getData();
+                    Log.v(LOG_TAG, "działa? = " + pictureUri.toString());
+
+                    int takeFlags = resultData.getFlags();
+                    takeFlags &= (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    picturePath = pictureUri.toString();
+                    //Declare a stream to read the data from the card
+                    InputStream inputStream;
+                    //We are getting an input stream based on the Uri of the image
+                    inputStream = getContentResolver().openInputStream(pictureUri);
+                    //Get a bitmap from the stream
+                    picture = BitmapFactory.decodeStream(inputStream);
+                    //Show the image to the user
+                    mAddImage.setImageBitmap(picture);
+                    picturePath = pictureUri.toString();
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            getContentResolver().takePersistableUriPermission(pictureUri, takeFlags);
+                        }
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
+                    mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mAddImage));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //Show the user a Toast mewssage that the Image is not available
+                    Toast.makeText(EditorActivity.this, "Unable to open image", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    public Bitmap getBitmapFromUri(Uri uri, ImageView imageView) {
+
+        if (uri == null || uri.toString().isEmpty())
+            return null;
+
+        // Get the dimensions of the View
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        InputStream input = null;
+        try {
+            input = this.getContentResolver().openInputStream(uri);
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            input = this.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+            return bitmap;
+
+        } catch (FileNotFoundException fne) {
+            Log.e(LOG_TAG, "Failed to load image.", fne);
+            return null;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ioe) {
+
             }
         }
     }
@@ -136,7 +228,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -227,6 +319,24 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     };
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (pictureUri != null)
+            outState.putString(STATE_PICTURE_URI, pictureUri.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(STATE_PICTURE_URI) &&
+                !savedInstanceState.getString(STATE_PICTURE_URI).equals("")) {
+            pictureUri = Uri.parse(savedInstanceState.getString(STATE_PICTURE_URI));
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
@@ -234,7 +344,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
-    private void savePet() {
+    private void saveItem() {
         if (pictureUri != null) {
             String nameString = mNameEditText.getText().toString().trim();
             String quantityString = mQuantityEditText.getText().toString().trim();
@@ -246,10 +356,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int quantity = Integer.parseInt(quantityString);
             // Create a String that contains the SQL statement to create the items table
 
+            picturePath = pictureUri.toString().trim();
+
             ContentValues values = new ContentValues();
             values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
             values.put(ItemEntry.COLUMN_ITEM_PRICE, priceString);
             values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
+            values.put(ItemEntry.COLUMN_ITEM_IMAGE, picturePath);
             if (mCurrentItemUri == null) {
                 Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
                 if (newUri == null) {
@@ -275,7 +388,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // save item to database
-                savePet();
+                saveItem();
 
                 // exit activity
                 finish();
@@ -286,7 +399,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
+                // If the item hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mItemHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
@@ -335,16 +448,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
             int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
+            int pictureColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
 
+            Log.v(LOG_TAG, "pictureColumnIndex = " + pictureColumnIndex + ", priceColumn = " + priceColumnIndex);
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String price = cursor.getString(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
+            String stringUri = cursor.getString(pictureColumnIndex);
+            Uri uriData = Uri.parse(stringUri);
 
             // Update the vies on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
             mQuantityEditText.setText(Integer.toString(quantity));
+            mAddImage.setImageURI(uriData);
         }
     }
 
@@ -353,5 +471,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mNameEditText.setText("");
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
+        mAddImage.setImageResource(R.drawable.no_image);
     }
 }
