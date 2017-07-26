@@ -143,6 +143,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     inputStream = getContentResolver().openInputStream(pictureUri);
                     //Get a bitmap from the stream
                     picture = BitmapFactory.decodeStream(inputStream);
+                    Bitmap.createScaledBitmap(picture, 88, 88, false);
                     //Show the image to the user
                     mAddImage.setImageBitmap(picture);
                     picturePath = pictureUri.toString();
@@ -431,7 +432,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
-                ItemEntry.COLUMN_ITEM_PRICE};
+                ItemEntry.COLUMN_ITEM_PRICE,
+                ItemEntry.COLUMN_ITEM_IMAGE};
         return new CursorLoader(this,
                 mCurrentItemUri,
                 projection,
@@ -450,7 +452,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
             int pictureColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
 
-            Log.v(LOG_TAG, "pictureColumnIndex = " + pictureColumnIndex + ", priceColumn = " + priceColumnIndex);
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String price = cursor.getString(priceColumnIndex);
@@ -458,10 +459,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String stringUri = cursor.getString(pictureColumnIndex);
             Uri uriData = Uri.parse(stringUri);
 
+            Log.v(LOG_TAG,"Uridata = "+uriData+
+            "; stringUri = "+ stringUri);
             // Update the vies on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
             mQuantityEditText.setText(Integer.toString(quantity));
+
+            //mAddImage.setImageBitmap(getBitmapFromUri(pictureUri, mAddImage));
+
+
             mAddImage.setImageURI(uriData);
         }
     }
