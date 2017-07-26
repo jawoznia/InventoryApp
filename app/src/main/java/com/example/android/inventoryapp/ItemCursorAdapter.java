@@ -41,6 +41,7 @@ public class ItemCursorAdapter extends CursorAdapter {
         TextView tvQuantity = (TextView) view.findViewById(R.id.item_quantity);
         ImageView ivImage = (ImageView) view.findViewById(R.id.item_image);
         Button saleBtn = (Button) view.findViewById(R.id.item_sell_btn);
+        Button buyBtn = (Button) view.findViewById(R.id.item_buy_btn);
 
 
         int idColumnIndex = cursor.getColumnIndex(ItemEntry._ID);
@@ -78,6 +79,21 @@ public class ItemCursorAdapter extends CursorAdapter {
                     // create the Uri of the current product
                     context.getContentResolver().update(currentItemUri, values, null, null);
                 }
+            }
+        });
+        buyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int tempQuantity = itemQuantity;
+                tempQuantity++;
+
+                ContentValues values = new ContentValues();
+                values.put(ItemEntry.COLUMN_ITEM_QUANTITY, tempQuantity);
+                Uri currentItemUri = ContentUris.withAppendedId(CONTENT_URI, itemId);
+
+                // create the Uri of the current product
+                context.getContentResolver().update(currentItemUri, values, null, null);
+
             }
         });
     }

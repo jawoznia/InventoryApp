@@ -41,10 +41,5 @@ public final class ItemContract {
         public static final String COLUMN_ITEM_PRICE = "price";
         public static final String COLUMN_ITEM_IMAGE = "image";
 
-        public static boolean isInInventory(Integer quantity) {
-            if (quantity <= 0)
-                return false;
-            else return true;
-        }
     }
 }

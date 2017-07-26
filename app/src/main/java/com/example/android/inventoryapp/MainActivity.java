@@ -57,15 +57,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.v("MainActivity", "Rozpoczęto start nowej aktywności");
                 Intent editIntent = new Intent(MainActivity.this, EditorActivity.class);
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
                 editIntent.setData(currentItemUri);
+                Log.v("MainActivity", "Rozpoczęto start nowej aktywności");
                 startActivity(editIntent);
             }
         });
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(ITEM_LOADER, null, this);
     }
 
     @Override

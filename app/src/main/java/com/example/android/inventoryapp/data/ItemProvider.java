@@ -208,7 +208,7 @@ public class ItemProvider extends ContentProvider {
         // check that the gender value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY)) {
             Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
-            if (quantity == null || !ItemEntry.isInInventory(quantity)) {
+            if (quantity == null) {
                 throw new IllegalArgumentException("Item requires valid quantity");
             }
         }
