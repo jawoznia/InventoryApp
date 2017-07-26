@@ -35,6 +35,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Created by Jam on 25.07.2017.
  */
@@ -48,6 +50,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private EditText mNameEditText;
 
+    private Button mIncreaseBtn;
+    private Button mDecreaseBtn;
     /**
      * EditText field to enter the item's quantity
      */
@@ -76,6 +80,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Bitmap picture;
 
     final Context mContext = this;
+
+    private int mQuantity;
 
     /**
      * Identifier for the record album image URI loader
@@ -109,6 +115,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mSupplierEditText = (EditText) findViewById(R.id.edit_supplier);
         mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mOrderButton = (Button) findViewById(R.id.edit_order_btn);
+        mIncreaseBtn = (Button) findViewById(R.id.editor_increase_button);
+        mDecreaseBtn = (Button) findViewById(R.id.editor_decrease_btn);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
@@ -117,6 +125,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mSupplierEditText.setOnTouchListener(mTouchListener);
         mSupplierEmailEditText.setOnTouchListener(mTouchListener);
         mOrderButton.setOnTouchListener(mTouchListener);
+        mDecreaseBtn.setOnTouchListener(mTouchListener);
+        mIncreaseBtn.setOnTouchListener(mTouchListener);
 
         mAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +170,36 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG).show();
                 }
 
+            }
+        });
+        mDecreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                String currentProduct = mNameEditText.getText().toString();
+                String toastMessage = null;
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                if (currentQuantity >= 1) {
+                    currentQuantity--;
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                } else {
+                    toastMessage = "You can't reduce your stock of " + currentProduct + " to 0!";
+                    mQuantityEditText.setText(String.valueOf(currentQuantity));
+                    Toast.makeText(v.getContext(), toastMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        mIncreaseBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                int currentQuantity = parseInt(mQuantityEditText.getText().toString());
+
+                currentQuantity++;
+                mQuantityEditText.setText(String.valueOf(currentQuantity));
             }
         });
 
@@ -397,7 +437,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 return;
             if (quantityString.isEmpty())
                 quantityString = "0";
-            int quantity = Integer.parseInt(quantityString);
+            int quantity = parseInt(quantityString);
             // Create a String that contains the SQL statement to create the items table
 
             picturePath = pictureUri.toString().trim();
@@ -510,8 +550,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String stringEmailSupplier = cursor.getString(supplierEmailColumnIndex);
             Uri uriData = Uri.parse(stringUri);
 
-            Log.v(LOG_TAG, "Uridata = " + uriData +
-                    "; stringUri = " + stringUri);
             // Update the vies on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
