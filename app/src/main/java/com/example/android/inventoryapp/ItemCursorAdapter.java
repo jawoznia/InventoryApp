@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.inventoryapp.data.ItemContract.ItemEntry;
@@ -39,7 +38,6 @@ public class ItemCursorAdapter extends CursorAdapter {
         TextView tvName = (TextView) view.findViewById(R.id.item_name);
         TextView tvPrice = (TextView) view.findViewById(R.id.item_price);
         TextView tvQuantity = (TextView) view.findViewById(R.id.item_quantity);
-        ImageView ivImage = (ImageView) view.findViewById(R.id.item_image);
         Button saleBtn = (Button) view.findViewById(R.id.item_sell_btn);
         Button buyBtn = (Button) view.findViewById(R.id.item_buy_btn);
 
@@ -55,18 +53,11 @@ public class ItemCursorAdapter extends CursorAdapter {
         String itemName = cursor.getString(nameColumnIndex);
         String itemPrice = cursor.getString(priceColumnIndex);
         final int itemQuantity = cursor.getInt(quantityColumnIndex);
-        String itemImage = cursor.getString(imageColumnIndex);
         final int itemId = cursor.getInt(idColumnIndex);
 
         tvName.setText(itemName);
         tvPrice.setText(itemPrice);
         tvQuantity.setText(context.getString(R.string.quantity_setting_text) + itemQuantity);
-
-        if (itemImage != null)
-            if (!itemImage.isEmpty())
-                if (itemImage.contains("drawable"))
-                    ivImage.setImageURI(Uri.parse(itemImage));
-
 
         saleBtn.setOnClickListener(new View.OnClickListener()
 
